@@ -60,12 +60,14 @@ app.get("/login", function (req, res) {
   if(queryResult.rowCount != 0){
     console.log("user exists");
 
-    query = `SELECT * FROM user_accounts WHERE password = '`+password+`';`;
+    query = `SELECT * FROM user_accounts WHERE password = '`+password+`' AND ID = '`+email+`';`;
     pool.query(query, (err, queryResult2) => {
       if(queryResult2.rowCount != 0){
         console.log("password matches");
+        console.log(queryResult2.rows[0]['role']);
         res.json({
-          status: "valid"
+          status: "valid",
+          role: queryResult2.rows[0]['role']
         })
 
       }else{
