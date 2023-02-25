@@ -6,9 +6,13 @@ app.use(express.json());
 // app.use(cors())
 
 var cors = require('cors')
-app.use(cors({
-  'Access-Control-Allow-Origin': '*'
-}));
+app.use((req, res, next) => {
+  res.append('Access-Control-Allow-Origin', ['*']);
+  res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.append('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 
 //setup postgres database
 const {Pool} = require("pg");
@@ -46,6 +50,7 @@ app.get("/login", function (req, res) {
   var email = req.headers["id"];
   var password = req.headers["password"];
 
+  //res.set('Access-Control-Allow-Origin', 'http://localhost:3000/create-session');
 
   // var query = 
   // `
@@ -66,7 +71,6 @@ app.get("/login", function (req, res) {
   console.log(queryResult.rows);
   console.log(queryResult.rowCount);
 
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000/create-session');
 
   //if user with ID exists then check if password matches
   if(queryResult.rowCount != 0){
