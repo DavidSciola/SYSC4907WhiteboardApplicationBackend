@@ -8,7 +8,8 @@ app.use(express.json());
 //setup postgres database
 const {Pool} = require("pg");
 const pool = new Pool({
-connectionString: "postgres://ngrlvutctwjhjn:85401b377bf90c8263a5e523708a0556bc84c982c1f34a04db4799864f98a05c@ec2-18-214-134-226.compute-1.amazonaws.com:5432/d4iu7lthoumkia",
+//connectionString: "postgres://ngrlvutctwjhjn:85401b377bf90c8263a5e523708a0556bc84c982c1f34a04db4799864f98a05c@ec2-18-214-134-226.compute-1.amazonaws.com:5432/d4iu7lthoumkia",
+connectionString: "postgres://ktveaiixprtkcb:62daebc5bdad97b0cc6cd2518bf96df1cdbad8f712081af9389d545f8be025dc@ec2-35-168-194-15.compute-1.amazonaws.com:5432/d9k73qtv1jck4t",
 ssl: {
 rejectUnauthorized: false
 }
