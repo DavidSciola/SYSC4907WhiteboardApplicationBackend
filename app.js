@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-app.use(allowCrossDomain)
+// app.use(allowCrossDomain)
 //var cors = require('cors')
 // app.use(cors())
 
