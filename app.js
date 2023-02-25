@@ -7,7 +7,7 @@ app.use(express.json());
 
 var cors = require('cors')
 app.use(cors({
-  origin: '*'
+  'Access-Control-Allow-Origin': '*'
 }));
 
 //setup postgres database
