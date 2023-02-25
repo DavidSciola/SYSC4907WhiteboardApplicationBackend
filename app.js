@@ -6,10 +6,9 @@ app.use(express.json());
 // app.use(cors())
 
 var cors = require('cors')
-var corsOptions = {
-  origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
+app.use(cors({
+  origin: '*'
+}));
 
 //setup postgres database
 const {Pool} = require("pg");
@@ -22,7 +21,7 @@ rejectUnauthorized: false
 });
 
 //dummy test endpoint
-app.get("/", cors(corsOptions), function (req, res) {
+app.get("/", function (req, res) {
   var query_param = req.query.queryparam1;
   var header = req.headers['header1'];
   const body = req.body.json;
