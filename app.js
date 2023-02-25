@@ -2,6 +2,9 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
+//testing
+//test
+
 //setup postgres database
 const {Pool} = require("pg");
 const pool = new Pool({
@@ -34,8 +37,9 @@ app.get("/", function (req, res) {
 app.get("/login", function (req, res) {
   console.log("logging in...")
 
-  var email = req.body["id"];
-  var password = req.body["password"];
+  var email = req.headers["id"];
+  var password = req.headers["password"];
+
 
   // var query = 
   // `
@@ -130,7 +134,7 @@ app.post("/login", function (req, res) {
 });
 
 
-app.get("/sessions", function (req, res) {
+app.get("/session", function (req, res) {
   //if public
 
   //else if private
@@ -138,10 +142,39 @@ app.get("/sessions", function (req, res) {
   //return all public/private sessions within date range
 });
 
-app.post("/sessions", function (req, res) {
-  //if public
+app.post("/session", function (req, res) {
+  console.log("creating session...");
+
+  var date = req.body["date"];
+  var startTime = req.body["startTime"];
+  var endTime = req.body["endTime"];
+  var course = req.body["course"];
+  var description = req.body["description"];
+  var numParticipants = req.body["numParticipants"];
+  var sessionType = req.body["sessionType"];
+
+  //if public session
+  if(sessionType == 'public'){
+    console.log("public");
+  }
+
+  var query = `INSERT INTO sessions(description, session_type, course_code, start_time, end_time, date, person_limit, status) 
+  VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, 'pending')`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select all from Users");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult);
+    }
+  });
 
   //else if private
+  //TODO
+
+  res.send("testing...");
 
 });
 
