@@ -66,6 +66,8 @@ app.get("/login", function (req, res) {
   console.log(queryResult.rows);
   console.log(queryResult.rowCount);
 
+  res.set('Access-Control-Allow-Origin', '*');
+
   //if user with ID exists then check if password matches
   if(queryResult.rowCount != 0){
     console.log("user exists");
