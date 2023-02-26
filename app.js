@@ -50,7 +50,7 @@ app.get("/login", function (req, res) {
   var email = req.headers["id"];
   var password = req.headers["password"];
 
-  //res.set('Access-Control-Allow-Origin', 'http://localhost:3000/create-session');
+  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
 
   // var query = 
   // `
