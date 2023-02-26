@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-// app.use(allowCrossDomain)
-//var cors = require('cors')
-// app.use(cors())
+app.use(allowCrossDomain)
+var cors = require('cors')
+app.use(cors())
 
 // var cors = require('cors')
 // app.use((req, res, next) => {
@@ -53,7 +53,7 @@ app.get("/", function (req, res) {
 });
 
 //receive username (carleton email) and password and then check if valid
-app.get("/login", function (req, res) {
+app.get("/login", cors(), function (req, res) {
   console.log("logging in...")
 
   var email = req.headers["id"];
