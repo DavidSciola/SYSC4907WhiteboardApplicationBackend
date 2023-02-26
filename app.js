@@ -15,15 +15,27 @@ app.use(express.json());
 
 // app.options('*', cors())
 
-//use cors to allow cross origin resource sharing
-app.use(cors({
-    "origin": 'http://localhost:3000',
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-    "allowedHeaders": ['Content-Type', 'Authorization'],
-    "preflightContinue": false,
-    "credentials": true
-}));
 
+
+
+
+// //use cors to allow cross origin resource sharing
+// app.use(cors({
+//     "origin": 'http://localhost:3000',
+//     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     "allowedHeaders": ['Content-Type', 'Authorization'],
+//     "preflightContinue": false,
+//     "credentials": true
+// }));
+
+
+
+
+app.UseCors(x => x
+  .AllowAnyMethod()
+  .AllowAnyHeader()
+  .SetIsOriginAllowed(origin => true) // allow any origin
+  .AllowCredentials()); // allow credentials
 
 
 //setup postgres database
