@@ -13,6 +13,13 @@ app.use(express.json());
 //   next();
 // });
 
+//use cors to allow cross origin resource sharing
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
+
+
 
 //setup postgres database
 const {Pool} = require("pg");
