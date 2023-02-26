@@ -13,11 +13,13 @@ app.use(express.json());
 //   next();
 // });
 
-//use cors to allow cross origin resource sharing
-app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
-}));
+app.options('*', cors())
+
+// //use cors to allow cross origin resource sharing
+// app.use(cors({
+//     origin: 'http://localhost:3000',
+//     credentials: true
+// }));
 
 
 
