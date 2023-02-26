@@ -50,6 +50,9 @@ app.get("/login", function (req, res) {
   var email = req.headers["id"];
   var password = req.headers["password"];
 
+  console.log("id: " + email)
+  console.log("password: " + password)
+
   res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
 
   // var query = 
