@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
-app.use(allowCrossDomain)
-var cors = require('cors')
-app.use(cors())
+// app.use(allowCrossDomain)
+// var cors = require('cors')
+// app.use(cors())
 
 // var cors = require('cors')
 // app.use((req, res, next) => {
@@ -13,13 +13,14 @@ app.use(cors())
 //   next();
 // });
 
-app.options('*', cors())
+// app.options('*', cors())
 
-// //use cors to allow cross origin resource sharing
-// app.use(cors({
-//     origin: 'http://localhost:3000',
-//     credentials: true
-// }));
+//use cors to allow cross origin resource sharing
+app.use(cors({
+    "origin": 'http://localhost:3000',
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "credentials": true
+}));
 
 
 
