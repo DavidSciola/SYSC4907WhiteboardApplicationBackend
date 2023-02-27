@@ -4,19 +4,19 @@ app.use(express.json());
 
 const cors = require('cors');
 
-app.use(cors({origin:'http://localhost:3000'}));
+//app.use(cors({origin:'http://localhost:3000'}));
 
 // app.use(allowCrossDomain)
 // var cors = require('cors')
 // app.use(cors())
 
-// var cors = require('cors')
-// app.use((req, res, next) => {
-//   res.append('Access-Control-Allow-Origin', ['*']);
-//   res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-//   res.append('Access-Control-Allow-Headers', 'Content-Type');
-//   next();
-// });
+var cors = require('cors')
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');  
+  res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
+  next();
+});
 
 // app.options('*', cors())
 
