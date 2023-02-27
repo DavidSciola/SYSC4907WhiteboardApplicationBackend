@@ -73,7 +73,7 @@ app.get("/", function (req, res) {
 });
 
 //receive username (carleton email) and password and then check if valid
-app.get("/login", cors(), function (req, res) {
+app.get("/login", function (req, res) {
   console.log("logging in...")
 
   var email = req.headers["id"];
@@ -82,7 +82,7 @@ app.get("/login", cors(), function (req, res) {
   console.log("id: " + email)
   console.log("password: " + password)
 
-  res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+  //res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
 
   // var query = 
   // `
