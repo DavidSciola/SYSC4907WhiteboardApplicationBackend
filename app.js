@@ -2,46 +2,8 @@ const express = require("express");
 const app = express();
 app.use(express.json());
 
-// app.use(allowCrossDomain)
-// var cors = require('cors')
-// app.use(cors())
-
-
 const cors = require('cors');
 app.use(cors({origin:'*'}));
-
-
-
-// var cors = require('cors')
-// app.use((req, res, next) => {
-//   res.header('Access-Control-Allow-Origin', '*');
-//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');  
-//   res.header("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With");
-//   next();
-// });
-
-
-
-
-
-
-// //use cors to allow cross origin resource sharing
-// app.use(cors({
-//     "origin": 'http://localhost:3000',
-//     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-//     "allowedHeaders": ['Content-Type', 'Authorization'],
-//     "preflightContinue": false,
-//     "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-//     "credentials": true
-// }));
-
-
-
-// app.UseCors(x => x
-//   .AllowAnyMethod()
-//   .AllowAnyHeader()
-//   .SetIsOriginAllowed(origin => true) // allow any origin
-//   .AllowCredentials()); // allow credentials
 
 
 //setup postgres database
@@ -82,13 +44,8 @@ app.get("/login", function (req, res) {
   var email = req.headers["id"];
   var password = req.headers["password"];
 
-  console.log("ORIGIN IS: " + origin)
   console.log("id: " + email)
   console.log("password: " + password)
-
-  
-
-  res.set('HELLO', 'WORLD');
 
   // var query = 
   // `
