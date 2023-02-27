@@ -88,7 +88,7 @@ app.get("/login", function (req, res) {
 
   
 
-  //res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.set('HELLO', 'WORLD');
 
   // var query = 
   // `
