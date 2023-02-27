@@ -82,6 +82,8 @@ app.get("/login", function (req, res) {
   console.log("id: " + email)
   console.log("password: " + password)
 
+  res.sendStatus(200);
+
   //res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
 
   // var query = 
