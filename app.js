@@ -1,6 +1,11 @@
 const express = require("express");
 const app = express();
 app.use(express.json());
+
+const cors = require('cors');
+
+app.use(cors({origin:'http://localhost:3000'}));
+
 // app.use(allowCrossDomain)
 // var cors = require('cors')
 // app.use(cors())
@@ -20,14 +25,14 @@ app.use(express.json());
 
 
 // //use cors to allow cross origin resource sharing
-app.use(cors({
-    "origin": 'http://localhost:3000',
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-    "allowedHeaders": ['Content-Type', 'Authorization'],
-    "preflightContinue": false,
-    "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
-    "credentials": true
-}));
+// app.use(cors({
+//     "origin": 'http://localhost:3000',
+//     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     "allowedHeaders": ['Content-Type', 'Authorization'],
+//     "preflightContinue": false,
+//     "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept",
+//     "credentials": true
+// }));
 
 
 
@@ -219,4 +224,4 @@ app.post("/session", function (req, res) {
 
 
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 5000 || 3000);
