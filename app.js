@@ -76,13 +76,16 @@ app.get("/", function (req, res) {
 app.get("/login", function (req, res) {
   console.log("logging in...")
 
+  var origin = req.headers["Origin"];
+
   var email = req.headers["id"];
   var password = req.headers["password"];
 
+  console.log("ORIGIN IS: " + origin)
   console.log("id: " + email)
   console.log("password: " + password)
 
-  res.sendStatus(200);
+  
 
   //res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
 
