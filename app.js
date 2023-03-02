@@ -140,15 +140,7 @@ app.post("/login", function (req, res) {
   });
 });
 
-
-app.get("/session", function (req, res) {
-  //if public
-
-  //else if private
-
-  //return all public/private sessions within date range
-});
-
+//create new session
 app.post("/session", function (req, res) {
   console.log("creating session...");
 
@@ -159,11 +151,6 @@ app.post("/session", function (req, res) {
   var description = req.body["description"];
   var numParticipants = req.body["numParticipants"];
   var sessionType = req.body["sessionType"];
-
-  //if public session
-  if(sessionType == 'public'){
-    console.log("public");
-  }
 
   var query = `INSERT INTO sessions(description, session_type, course_code, start_time, end_time, date, person_limit, status) 
   VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, 'pending')`;
@@ -178,10 +165,32 @@ app.post("/session", function (req, res) {
     }
   });
 
-  //else if private
-  //TODO
+  res.send("created session");
+});
 
-  res.send("testing...");
+//fetch all sessions
+app.get("/session", function (req, res) {
+  console.log("fetching all sessions...");
+
+  var query = `SELECT * FROM sessions;`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select all from Users");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult.rows);
+        
+        //return json with all public/private sessions
+        const responseData = {
+          results: queryResult.rows
+        }
+
+        const jsonContent = JSON.stringify(responseData);
+        res.send(jsonContent);
+    }
+  });
 
 });
 
