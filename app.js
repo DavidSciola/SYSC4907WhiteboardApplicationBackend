@@ -151,9 +151,10 @@ app.post("/session", function (req, res) {
   var description = req.body["description"];
   var numParticipants = req.body["numParticipants"];
   var sessionType = req.body["sessionType"];
+  var sessionStatus = req.body["sessionStatus"];
 
   var query = `INSERT INTO sessions(description, session_type, course_code, start_time, end_time, date, person_limit, status) 
-  VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, 'pending')`;
+  VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, '`+sessionStatus+`')`;
 
   pool.query(query, (err, queryResult) => {
     if (err) {
@@ -192,6 +193,31 @@ app.get("/session", function (req, res) {
     }
   });
 
+});
+
+//fetch all requested sessions
+app.get("/requested-sessions", function (req, res) {
+  console.log("fetching all sessions...");
+
+  var query = `SELECT * FROM sessions WHERE status = 'requested';`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select sessions with status = requested");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult.rows);
+        
+        //return json with all public/private sessions
+        const responseData = {
+          results: queryResult.rows
+        }
+
+        const jsonContent = JSON.stringify(responseData);
+        res.send(jsonContent);
+    }
+  });
 });
 
 
