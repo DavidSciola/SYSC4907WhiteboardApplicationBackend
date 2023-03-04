@@ -199,7 +199,7 @@ app.get("/session", function (req, res) {
 app.get("/requested-sessions", function (req, res) {
   console.log("fetching all requested sessions...");
 
-  var query = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_ID = user_sessions.session_ID
+  var query = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id
   WHERE sessions.status = 'requested';`;
 
   pool.query(query, (err, queryResult) => {
