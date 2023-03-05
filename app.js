@@ -165,8 +165,8 @@ app.post("/session", function (req, res) {
         console.log(err);
     }
     else{
-        console.log(queryResult.rows[0].get("session_id"));
-        sessionID = queryResult.rows[0].get("session_id")
+        console.log(type(queryResult.rows[0]));
+        sessionID = queryResult.rows[0]["session_id"]
     }
   });
 
