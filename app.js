@@ -167,19 +167,18 @@ app.post("/session", function (req, res) {
     else{
         console.log(queryResult);
         sessionID = queryResult.rows[0].session_id
-    }
-  });
 
-  query = `INSERT INTO user_sessions(ID, session_ID, attended) VALUES ('`+userID+`',`+sessionID+`, false);`
-  console.log(query)
+        query = `INSERT INTO user_sessions(ID, session_ID, attended) VALUES ('`+userID+`',`+sessionID+`, false);`
 
-  pool.query(query, (err, queryResult) => {
-    if (err) {
-        console.log("Error - Failed to insert into user_sessions table");
-        console.log(err);
-    }
-    else{
-        console.log(queryResult);
+        pool.query(query, (err, queryResult) => {
+          if (err) {
+              console.log("Error - Failed to insert into user_sessions table");
+              console.log(err);
+          }
+          else{
+              console.log(queryResult);
+          }
+        });
     }
   });
 
