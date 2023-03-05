@@ -157,7 +157,7 @@ app.post("/session", function (req, res) {
 
   var query = `INSERT INTO sessions(description, session_type, course_code, start_time, end_time, date, person_limit, status) 
   VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, '`+sessionStatus+`')
-  RETURNING session_id`;
+  RETURNING session_id INTO sessionID`;
 
   pool.query(query, (err, queryResult) => {
     if (err) {
@@ -165,7 +165,7 @@ app.post("/session", function (req, res) {
         console.log(err);
     }
     else{
-        console.log(queryResult["rows"]);
+        console.log(queryResult);
         sessionID = queryResult.rows[0]["session_id"]
     }
   });
