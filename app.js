@@ -153,6 +153,7 @@ app.post("/session", function (req, res) {
   var sessionType = req.body["sessionType"];
   var sessionStatus = req.body["sessionStatus"];
   var userID = req.body["userID"]
+  var sessionID
 
   var query = `INSERT INTO sessions(description, session_type, course_code, start_time, end_time, date, person_limit, status) 
   VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, '`+sessionStatus+`')
@@ -165,6 +166,7 @@ app.post("/session", function (req, res) {
     }
     else{
         console.log(queryResult);
+        sessionID = queryResult.res[rows][0]["session_id"]
     }
   });
 
