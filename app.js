@@ -152,6 +152,7 @@ app.post("/session", function (req, res) {
   var numParticipants = req.body["numParticipants"];
   var sessionType = req.body["sessionType"];
   var sessionStatus = req.body["sessionStatus"];
+  var userID = req.body["userID"]
 
   var query = `INSERT INTO sessions(description, session_type, course_code, start_time, end_time, date, person_limit, status) 
   VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, '`+sessionStatus+`')
@@ -160,6 +161,18 @@ app.post("/session", function (req, res) {
   pool.query(query, (err, queryResult) => {
     if (err) {
         console.log("Error - Failed to select all from Users");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult);
+    }
+  });
+
+  query = `INSERT INTO user_sessions(ID, session_ID, attended) VALUES ('`+userID+`',`+queryResult.res[rows][0]["session_id"] + `, false);`
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to insert into user_sessions table");
         console.log(err);
     }
     else{
