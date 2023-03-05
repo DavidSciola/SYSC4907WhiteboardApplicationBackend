@@ -157,9 +157,9 @@ app.post("/session", function (req, res) {
 
   var query = `INSERT INTO sessions(description, session_type, course_code, start_time, end_time, date, person_limit, status) 
   VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, '`+sessionStatus+`')
-  RETURNING session_id INTO $1`;
+  RETURNING session_id`;
 
-  pool.query(query, sessionID, (err, queryResult) => {
+  pool.query(query, (err, queryResult) => {
     if (err) {
         console.log("Error - Failed to select all from Users");
         console.log(err);
