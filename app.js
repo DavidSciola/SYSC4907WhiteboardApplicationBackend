@@ -170,7 +170,7 @@ app.post("/session", function (req, res) {
     }
   });
 
-  query = `INSERT INTO user_sessions(ID, session_ID, attended) VALUES ('`+userID+`',`+queryResult.res[rows][0]["session_id"] + `, false);`
+  query = `INSERT INTO user_sessions(ID, session_ID, attended) VALUES ('`+userID+`',`+sessionID+`, false);`
 
   pool.query(query, (err, queryResult) => {
     if (err) {
