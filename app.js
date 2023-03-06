@@ -152,9 +152,12 @@ app.post("/session", function (req, res) {
   var numParticipants = req.body["numParticipants"];
   var sessionType = req.body["sessionType"];
   var sessionStatus = req.body["sessionStatus"];
+  var userID = req.body["userID"]
+  var sessionID = 0
 
   var query = `INSERT INTO sessions(description, session_type, course_code, start_time, end_time, date, person_limit, status) 
-  VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, '`+sessionStatus+`')`;
+  VALUES ('`+description+`', '`+sessionType+`', '`+course+`', '`+startTime+`', '`+endTime+`', '`+date+`', `+numParticipants+`, '`+sessionStatus+`')
+  RETURNING session_id`;
 
   pool.query(query, (err, queryResult) => {
     if (err) {
@@ -163,6 +166,19 @@ app.post("/session", function (req, res) {
     }
     else{
         console.log(queryResult);
+        sessionID = queryResult.rows[0].session_id
+
+        query = `INSERT INTO user_sessions(ID, session_ID, attended) VALUES ('`+userID+`',`+sessionID+`, false);`
+
+        pool.query(query, (err, queryResult) => {
+          if (err) {
+              console.log("Error - Failed to insert into user_sessions table");
+              console.log(err);
+          }
+          else{
+              console.log(queryResult);
+          }
+        });
     }
   });
 
@@ -197,9 +213,10 @@ app.get("/session", function (req, res) {
 
 //fetch all requested sessions
 app.get("/requested-sessions", function (req, res) {
-  console.log("fetching all sessions...");
+  console.log("fetching all requested sessions...");
 
-  var query = `SELECT * FROM sessions WHERE status = 'requested';`;
+  var query = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id
+  WHERE sessions.status = 'requested';`;
 
   pool.query(query, (err, queryResult) => {
     if (err) {
@@ -209,7 +226,57 @@ app.get("/requested-sessions", function (req, res) {
     else{
         console.log(queryResult.rows);
         
-        //return json with all public/private sessions
+        //return json with all requested sessions
+        const responseData = {
+          results: queryResult.rows
+        }
+
+        const jsonContent = JSON.stringify(responseData);
+        res.send(jsonContent);
+    }
+  });
+});
+
+//fetch all students
+app.get("/students", function (req, res) {
+  console.log("fetching all students...");
+
+  var query = `SELECT * FROM user_accounts WHERE role = 'student';`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select users with role = student");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult.rows);
+        
+        //return json with all requested sessions
+        const responseData = {
+          results: queryResult.rows
+        }
+
+        const jsonContent = JSON.stringify(responseData);
+        res.send(jsonContent);
+    }
+  });
+});
+
+//fetch all scholars
+app.get("/scholars", function (req, res) {
+  console.log("fetching all scholars...");
+
+  var query = `SELECT * FROM user_accounts WHERE role = 'scholar';`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select users with role = scholar");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult.rows);
+        
+        //return json with all requested sessions
         const responseData = {
           results: queryResult.rows
         }
