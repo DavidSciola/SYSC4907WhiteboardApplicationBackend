@@ -185,30 +185,36 @@ app.post("/session", function (req, res) {
   res.send("created session");
 });
 
-//fetch all sessions
+//fetch all sessions (this includes private sessions user associated with user, 
+// public sessions user has registered for and public sessions user has not registered for)
 app.get("/session", function (req, res) {
   console.log("fetching all sessions...");
 
-  var query = `SELECT * FROM sessions;`;
+  var current_user_id = req.headers['user_id'];
+  var data = {};
 
-  pool.query(query, (err, queryResult) => {
-    if (err) {
-        console.log("Error - Failed to select all from Users");
-        console.log(err);
-    }
-    else{
-        console.log(queryResult.rows);
+  // step 1, fetch private sessions that user is associated with
+  var query1 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'private' AND id = '`+current_user_id+`';`;
+  pool.query(query1, (err, queryResult) => {
+    data['private_sessions'] = queryResult.rows;
+
+    // step 2, fetch public sessions that user has registered for
+    var query2 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'public' AND id = '`+current_user_id+`';`;
+    pool.query(query2, (err, queryResult) => {
+      data['registered_public_sessions'] = queryResult.rows;
+
+          // step 3, fetch public sessions that user has HAS NOT registered for
+          var query3 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'public' AND id != '`+current_user_id+`';`;
+          pool.query(query3, (err, queryResult) => {
+            data['unregistered_public_sessions'] = queryResult.rows;
+
+            // step 4, send combined results from steps 1,2 and 3
+            const jsonContent = JSON.stringify(data);
+            res.send(jsonContent);
         
-        //return json with all public/private sessions
-        const responseData = {
-          results: queryResult.rows
-        }
-
-        const jsonContent = JSON.stringify(responseData);
-        res.send(jsonContent);
-    }
+          });
+    });
   });
-
 });
 
 //fetch all requested sessions
