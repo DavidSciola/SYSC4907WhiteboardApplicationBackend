@@ -330,6 +330,117 @@ app.get("/scholars", function (req, res) {
   });
 });
 
+var timeMap = new Map();
+timeMap.set("8:30", 0)
+timeMap.set("9:00", 1)
+timeMap.set("9:30", 2)
+timeMap.set("10:00", 3)
+timeMap.set("10:30", 4)
+timeMap.set("11:00", 5)
+timeMap.set("11:30", 6)
+timeMap.set("12:00", 7)
+timeMap.set("12:30", 8)
+timeMap.set("13:00", 9)
+timeMap.set("13:30", 10)
+timeMap.set("14:00", 11)
+timeMap.set("14:30", 12)
+timeMap.set("15:00", 13)
+timeMap.set("15:30", 14)
+timeMap.set("16:00", 15)
+timeMap.set("16:30", 16)
+timeMap.set("17:00", 17)
 
+function setAvailability(userID, date, startTime, endTime, dayOfWeek) {
+  var query = `SELECT * FROM availability WHERE id = ` + userID + ` AND start_of_week = '` + date.toDateString() + `';`;
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to get existing availability of user");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult.rows);
+        
+        if (queryResult.rows.length == 0) {
+          var availability = {
+            0: ["F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F"],
+            1: ["F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F"],
+            2: ["F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F"],
+            3: ["F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F"],
+            4: ["F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F"],
+            5: ["F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F"],
+            6: ["F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F","F"]
+          }
+
+          for (var i = timeMap.get(startTime); i < timeMap.get(endTime); i++) {
+            availability[dayOfWeek][i] = "T";
+          }
+
+          query = `INSERT INTO availability(id, start_of_week, availability) VALUES('`+userID+`', '`+date+`', '`+json.stringify(availability)+`'`
+        } else {
+          var availability = queryResult.rows[0].availability;
+          for (var i = timeMap.get(startTime); i < timeMap.get(endTime); i++) {
+            availability[dayOfWeek][i] = "T";
+          }
+
+          query = `UPDATE availability SET availability = '`+json.stringify(availability)+`' WHERE id = ` + userID + 
+          ` AND start_of_week = '` + date.toDateString() + `';`
+        }
+
+        pool.query(query, (err, queryResult) => {
+          if (err) {
+            console.log("Error - Failed to set availability");
+            console.log(err);
+          } else {
+            console.log(queryResult);
+          }
+        });
+    }
+  });
+}
+
+//set availability
+app.post("/availability", function (req, res) {
+  console.log("setting availability...");
+
+  var userID = req.body["userID"];
+  var day = req.body["day"];
+  var date = req.body["date"];
+  var startTime = req.body["startTime"];
+  var endTime = req.body["endTime"];
+  
+  //recurring
+  if (day) {
+    var currentDate = new Date();
+    dayOfWeek = currentDate.getDay();
+    month = currentDate.getMonth();
+    year = currentDate.getFullYear();
+    currentDate.setDate(currentDate.getDate() - dayOfWeek);
+
+    var endDate;
+    if (month >= 8) {
+      endDate = new Date(year, 11, 31);
+    } else if (month >= 4) {
+      endDate = new Date(year, 7, 31);
+    } else {
+      endDate = new Date(year, 3, 30);
+    }
+
+    for (currentDate; date < endDate; currentDate.setDate(currentDate.getDate() + 7)) {
+      setAvailability(userID, currentDate, startTime, endTime, dayOfWeek);
+    }
+  }
+  
+  //single occurence
+  if (date) {
+    var requestDate = new Date(date);
+    dayOfWeek = givenDate.getDay();
+    requestDate.setDate(givenDate.getDate() - dayOfWeek);
+
+    //var query = `INSERT INTO availability(id, start_of_week, availability) VALUES('`+userID+`', '`+date+`', '`+json.stringify(availability)+`')
+    //ON CONFLICT (id) DO UPDATE SET availability = 'ab'`;
+
+    setAvailability(userID, requestDate, startTime, endTime, dayOfWeek);
+  }
+});
 
 app.listen(process.env.PORT || 5000 || 3000);
