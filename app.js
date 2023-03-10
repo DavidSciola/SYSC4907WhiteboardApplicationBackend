@@ -190,21 +190,22 @@ app.post("/session", function (req, res) {
 app.get("/session", function (req, res) {
   console.log("fetching all sessions...");
 
-  var current_user_id = req.headers['user_id'];
+  var currentUserId = req.headers['user_id'];
   var data = {};
 
   // step 1, fetch private sessions that user is associated with
-  var query1 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'private' AND id = '`+current_user_id+`';`;
+  var query1 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'private' AND id = '`+currentUserId+`';`;
   pool.query(query1, (err, queryResult) => {
     data['private_sessions'] = queryResult.rows;
 
     // step 2, fetch public sessions that user has registered for
-    var query2 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'public' AND id = '`+current_user_id+`';`;
+    var query2 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'public' AND id = '`+currentUserId+`';`;
     pool.query(query2, (err, queryResult) => {
       data['registered_public_sessions'] = queryResult.rows;
 
           // step 3, fetch public sessions that user has HAS NOT registered for
-          var query3 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'public' AND id != '`+current_user_id+`';`;
+          //var query3 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'public' AND id != '`+currentUserId+`';`;
+          var query3 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id AND session_type = 'public' AND sessions.session_ID NOT IN (SELECT session_id FROM user_sessions WHERE id = '`+currentUserId+`');`;
           pool.query(query3, (err, queryResult) => {
             data['unregistered_public_sessions'] = queryResult.rows;
 
@@ -215,6 +216,42 @@ app.get("/session", function (req, res) {
           });
     });
   });
+});
+
+//create new session
+app.post("/register-session", function (req, res) {
+  var registerOrUnregister = req.body["registerOrUnregister"];
+  var userID = req.body["userid"];
+  var sessionID = req.body["sessionid"];
+
+  if(registerOrUnregister == "register"){
+    console.log("registering user " + userID + " for session " + sessionID);
+    var query = `INSERT INTO user_sessions(ID, session_ID, attended) VALUES ('`+userID+`', `+sessionID+`, false);`;
+    pool.query(query, (err, queryResult) => {
+      if (err) {
+          console.log("Error - Failed to insert into user_sessions table");
+          console.log(err);
+      }
+      else{
+          console.log(queryResult);
+      }
+    });
+
+  }else{
+    console.log("unregistering user " + userID + " for session " + sessionID);
+    var query = `DELETE FROM user_sessions WHERE session_id = '`+sessionID+`' AND id = '`+userID+`';`;
+    pool.query(query, (err, queryResult) => {
+      if (err) {
+          console.log("Error - Failed to delete from user_sessions table");
+          console.log(err);
+      }
+      else{
+          console.log(queryResult);
+      }
+    });
+  }
+
+  res.send("action successful");
 });
 
 //fetch all requested sessions
