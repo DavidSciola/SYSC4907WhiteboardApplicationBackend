@@ -433,8 +433,8 @@ app.post("/availability", function (req, res) {
   //single occurence
   if (date) {
     var requestDate = new Date(date);
-    dayOfWeek = givenDate.getDay();
-    requestDate.setDate(givenDate.getDate() - dayOfWeek);
+    dayOfWeek = requestDate .getDay();
+    requestDate.setDate(requestDate .getDate() - dayOfWeek);
 
     //var query = `INSERT INTO availability(id, start_of_week, availability) VALUES('`+userID+`', '`+date+`', '`+json.stringify(availability)+`')
     //ON CONFLICT (id) DO UPDATE SET availability = 'ab'`;
