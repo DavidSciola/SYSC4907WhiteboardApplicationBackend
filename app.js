@@ -218,7 +218,7 @@ app.get("/session", function (req, res) {
   });
 });
 
-//create new session
+//register or unregister from a session
 app.post("/register-session", function (req, res) {
   var registerOrUnregister = req.body["registerOrUnregister"];
   var userID = req.body["userid"];
