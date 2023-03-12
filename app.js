@@ -16,6 +16,35 @@ rejectUnauthorized: false
 }
 });
 
+var dayMap = new Map();
+dayMap.set("Sunday", 0);
+dayMap.set("Monday", 1);
+dayMap.set("Tuesday", 2);
+dayMap.set("Wednesday", 3);
+dayMap.set("Thursday", 4);
+dayMap.set("Friday", 5);
+dayMap.set("Saturday", 6);
+
+var timeMap = new Map();
+timeMap.set("8:30", 0)
+timeMap.set("9:00", 1)
+timeMap.set("9:30", 2)
+timeMap.set("10:00", 3)
+timeMap.set("10:30", 4)
+timeMap.set("11:00", 5)
+timeMap.set("11:30", 6)
+timeMap.set("12:00", 7)
+timeMap.set("12:30", 8)
+timeMap.set("13:00", 9)
+timeMap.set("13:30", 10)
+timeMap.set("14:00", 11)
+timeMap.set("14:30", 12)
+timeMap.set("15:00", 13)
+timeMap.set("15:30", 14)
+timeMap.set("16:00", 15)
+timeMap.set("16:30", 16)
+timeMap.set("17:00", 17)
+
 //dummy test endpoint
 app.get("/", function (req, res) {
   var query_param = req.query.queryparam1;
@@ -330,28 +359,10 @@ app.get("/scholars", function (req, res) {
   });
 });
 
-var timeMap = new Map();
-timeMap.set("8:30", 0)
-timeMap.set("9:00", 1)
-timeMap.set("9:30", 2)
-timeMap.set("10:00", 3)
-timeMap.set("10:30", 4)
-timeMap.set("11:00", 5)
-timeMap.set("11:30", 6)
-timeMap.set("12:00", 7)
-timeMap.set("12:30", 8)
-timeMap.set("13:00", 9)
-timeMap.set("13:30", 10)
-timeMap.set("14:00", 11)
-timeMap.set("14:30", 12)
-timeMap.set("15:00", 13)
-timeMap.set("15:30", 14)
-timeMap.set("16:00", 15)
-timeMap.set("16:30", 16)
-timeMap.set("17:00", 17)
-
 function setAvailability(userID, date, startTime, endTime, dayOfWeek) {
-  var query = `SELECT * FROM availability WHERE id = ` + userID + ` AND start_of_week = '` + date.toDateString() + `';`;
+  var dateString = date.toDateString();
+  console.log("date: " + dateString);
+  var query = `SELECT * FROM availability WHERE id = '` + userID + `' AND start_of_week = '` + dateString + `';`;
   pool.query(query, (err, queryResult) => {
     if (err) {
         console.log("Error - Failed to get existing availability of user");
