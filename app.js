@@ -386,15 +386,16 @@ function setAvailability(userID, date, startTime, endTime, dayOfWeek) {
             availability[dayOfWeek][i] = "T";
           }
 
-          query = `INSERT INTO availability(id, start_of_week, availability) VALUES('`+userID+`', '`+date+`', '`+json.stringify(availability)+`'`
+          console.log("date: " + dateString);
+          query = `INSERT INTO availability(id, start_of_week, availability) VALUES('`+userID+`', '`+dateString+`', '`+JSON.stringify(availability)+`');`
         } else {
-          var availability = queryResult.rows[0].availability;
+          var availability = JSON.parse(queryResult.rows[0].availability);
           for (var i = timeMap.get(startTime); i < timeMap.get(endTime); i++) {
             availability[dayOfWeek][i] = "T";
           }
 
-          query = `UPDATE availability SET availability = '`+json.stringify(availability)+`' WHERE id = ` + userID + 
-          ` AND start_of_week = '` + date.toDateString() + `';`
+          query = `UPDATE availability SET availability = '`+JSON.stringify(availability)+`' WHERE id = '` + userID + `' AND
+          start_of_week = '` + dateString + `';`
         }
 
         pool.query(query, (err, queryResult) => {
@@ -422,9 +423,9 @@ app.post("/availability", function (req, res) {
   //recurring
   if (day) {
     var currentDate = new Date();
-    dayOfWeek = currentDate.getDay();
-    month = currentDate.getMonth();
-    year = currentDate.getFullYear();
+    var dayOfWeek = currentDate.getDay();
+    var month = currentDate.getMonth();
+    var year = currentDate.getFullYear();
     currentDate.setDate(currentDate.getDate() - dayOfWeek);
 
     var endDate;
@@ -434,18 +435,20 @@ app.post("/availability", function (req, res) {
       endDate = new Date(year, 7, 31);
     } else {
       endDate = new Date(year, 3, 30);
+      console.log(endDate);
     }
 
-    for (currentDate; date < endDate; currentDate.setDate(currentDate.getDate() + 7)) {
-      setAvailability(userID, currentDate, startTime, endTime, dayOfWeek);
+    for (var tempDate = currentDate; tempDate < endDate; tempDate.setDate(tempDate.getDate() + 7)) {
+      console.log("loop:" + tempDate);
+      setAvailability(userID, tempDate, startTime, endTime, dayMap.get(day));
     }
   }
   
   //single occurence
   if (date) {
     var requestDate = new Date(date);
-    dayOfWeek = requestDate .getDay();
-    requestDate.setDate(requestDate .getDate() - dayOfWeek);
+    var dayOfWeek = requestDate.getDay();
+    requestDate.setDate(requestDate.getDate() - dayOfWeek);
 
     //var query = `INSERT INTO availability(id, start_of_week, availability) VALUES('`+userID+`', '`+date+`', '`+json.stringify(availability)+`')
     //ON CONFLICT (id) DO UPDATE SET availability = 'ab'`;
