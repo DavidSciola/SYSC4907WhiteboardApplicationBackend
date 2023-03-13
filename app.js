@@ -367,7 +367,6 @@ function setAvailability(userID, date, startTime, endTime, dayOfWeek) {
     if (err) {
         console.log("Error - Failed to get existing availability of user");
         console.log(err);
-        res.send("action unsuccessful");
     }
     else{
         console.log(queryResult.rows);
@@ -403,10 +402,8 @@ function setAvailability(userID, date, startTime, endTime, dayOfWeek) {
           if (err) {
             console.log("Error - Failed to set availability");
             console.log(err);
-            res.send("action unsuccessful");
           } else {
             console.log(queryResult);
-            res.send("action successful");
           }
         });
     }
@@ -458,6 +455,7 @@ app.post("/availability", function (req, res) {
 
     setAvailability(userID, requestDate, startTime, endTime, dayOfWeek);
   }
+  res.send("request complete");
 });
 
 app.listen(process.env.PORT || 5000 || 3000);
