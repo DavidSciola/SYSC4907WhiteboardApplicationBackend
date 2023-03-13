@@ -16,6 +16,35 @@ rejectUnauthorized: false
 }
 });
 
+var dayMap = new Map();
+dayMap.set("Sunday", 0);
+dayMap.set("Monday", 1);
+dayMap.set("Tuesday", 2);
+dayMap.set("Wednesday", 3);
+dayMap.set("Thursday", 4);
+dayMap.set("Friday", 5);
+dayMap.set("Saturday", 6);
+
+var timeMap = new Map();
+timeMap.set("8:30", 0)
+timeMap.set("9:00", 1)
+timeMap.set("9:30", 2)
+timeMap.set("10:00", 3)
+timeMap.set("10:30", 4)
+timeMap.set("11:00", 5)
+timeMap.set("11:30", 6)
+timeMap.set("12:00", 7)
+timeMap.set("12:30", 8)
+timeMap.set("13:00", 9)
+timeMap.set("13:30", 10)
+timeMap.set("14:00", 11)
+timeMap.set("14:30", 12)
+timeMap.set("15:00", 13)
+timeMap.set("15:30", 14)
+timeMap.set("16:00", 15)
+timeMap.set("16:30", 16)
+timeMap.set("17:00", 17)
+
 //dummy test endpoint
 app.get("/", function (req, res) {
   var query_param = req.query.queryparam1;
@@ -330,28 +359,10 @@ app.get("/scholars", function (req, res) {
   });
 });
 
-var timeMap = new Map();
-timeMap.set("8:30", 0)
-timeMap.set("9:00", 1)
-timeMap.set("9:30", 2)
-timeMap.set("10:00", 3)
-timeMap.set("10:30", 4)
-timeMap.set("11:00", 5)
-timeMap.set("11:30", 6)
-timeMap.set("12:00", 7)
-timeMap.set("12:30", 8)
-timeMap.set("13:00", 9)
-timeMap.set("13:30", 10)
-timeMap.set("14:00", 11)
-timeMap.set("14:30", 12)
-timeMap.set("15:00", 13)
-timeMap.set("15:30", 14)
-timeMap.set("16:00", 15)
-timeMap.set("16:30", 16)
-timeMap.set("17:00", 17)
-
 function setAvailability(userID, date, startTime, endTime, dayOfWeek) {
-  var query = `SELECT * FROM availability WHERE id = ` + userID + ` AND start_of_week = '` + date.toDateString() + `';`;
+  var dateString = date.toDateString();
+  console.log("date: " + dateString);
+  var query = `SELECT * FROM availability WHERE id = '` + userID + `' AND start_of_week = '` + dateString + `';`;
   pool.query(query, (err, queryResult) => {
     if (err) {
         console.log("Error - Failed to get existing availability of user");
@@ -375,15 +386,16 @@ function setAvailability(userID, date, startTime, endTime, dayOfWeek) {
             availability[dayOfWeek][i] = "T";
           }
 
-          query = `INSERT INTO availability(id, start_of_week, availability) VALUES('`+userID+`', '`+date+`', '`+json.stringify(availability)+`'`
+          console.log("date: " + dateString);
+          query = `INSERT INTO availability(id, start_of_week, availability) VALUES('`+userID+`', '`+dateString+`', '`+JSON.stringify(availability)+`');`
         } else {
-          var availability = queryResult.rows[0].availability;
+          var availability = JSON.parse(queryResult.rows[0].availability);
           for (var i = timeMap.get(startTime); i < timeMap.get(endTime); i++) {
             availability[dayOfWeek][i] = "T";
           }
 
-          query = `UPDATE availability SET availability = '`+json.stringify(availability)+`' WHERE id = ` + userID + 
-          ` AND start_of_week = '` + date.toDateString() + `';`
+          query = `UPDATE availability SET availability = '`+JSON.stringify(availability)+`' WHERE id = '` + userID + `' AND
+          start_of_week = '` + dateString + `';`
         }
 
         pool.query(query, (err, queryResult) => {
@@ -411,9 +423,9 @@ app.post("/availability", function (req, res) {
   //recurring
   if (day) {
     var currentDate = new Date();
-    dayOfWeek = currentDate.getDay();
-    month = currentDate.getMonth();
-    year = currentDate.getFullYear();
+    var dayOfWeek = currentDate.getDay();
+    var month = currentDate.getMonth();
+    var year = currentDate.getFullYear();
     currentDate.setDate(currentDate.getDate() - dayOfWeek);
 
     var endDate;
@@ -423,24 +435,27 @@ app.post("/availability", function (req, res) {
       endDate = new Date(year, 7, 31);
     } else {
       endDate = new Date(year, 3, 30);
+      console.log(endDate);
     }
 
-    for (currentDate; date < endDate; currentDate.setDate(currentDate.getDate() + 7)) {
-      setAvailability(userID, currentDate, startTime, endTime, dayOfWeek);
+    for (var tempDate = currentDate; tempDate < endDate; tempDate.setDate(tempDate.getDate() + 7)) {
+      console.log("loop:" + tempDate);
+      setAvailability(userID, tempDate, startTime, endTime, dayMap.get(day));
     }
   }
   
   //single occurence
   if (date) {
     var requestDate = new Date(date);
-    dayOfWeek = requestDate .getDay();
-    requestDate.setDate(requestDate .getDate() - dayOfWeek);
+    var dayOfWeek = requestDate.getDay();
+    requestDate.setDate(requestDate.getDate() - dayOfWeek);
 
     //var query = `INSERT INTO availability(id, start_of_week, availability) VALUES('`+userID+`', '`+date+`', '`+json.stringify(availability)+`')
     //ON CONFLICT (id) DO UPDATE SET availability = 'ab'`;
 
     setAvailability(userID, requestDate, startTime, endTime, dayOfWeek);
   }
+  res.send("request complete");
 });
 
 app.listen(process.env.PORT || 5000 || 3000);
