@@ -389,6 +389,27 @@ app.get("/students", function (req, res) {
   });
 });
 
+
+//promote student to scholar
+app.post("/promote_student", function (req, res) {
+  console.log("propmoting student...");
+
+  var userId = req.headers['user_id'];
+
+  var query = `UPDATE user_accounts SET role = 'scholar' WHERE id = '`+userId+`';`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select users with role = student");
+        console.log(err);
+    }
+    else{
+      res.send("action successful");
+    }
+  });
+});
+
+
 //fetch all scholars
 app.get("/scholars", function (req, res) {
   console.log("fetching all scholars...");
