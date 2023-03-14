@@ -185,8 +185,10 @@ app.post("/session", function (req, res) {
   res.send("created session");
 });
 
+//TODO, try and merge some of these fetch session endpoints???
+
 //fetch all sessions (this includes private sessions user associated with user, 
-// public sessions user has registered for and public sessions user has not registered for)
+//public sessions user has registered for and public sessions user has not registered for)
 app.get("/session", function (req, res) {
   console.log("fetching all sessions...");
 
@@ -212,9 +214,88 @@ app.get("/session", function (req, res) {
             // step 4, send combined results from steps 1,2 and 3
             const jsonContent = JSON.stringify(data);
             res.send(jsonContent);
-        
           });
     });
+  });
+});
+
+//fetch all requested sessions
+app.get("/requested-sessions", function (req, res) {
+  console.log("fetching all requested sessions...");
+
+  var query = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id
+  WHERE sessions.status = 'requested';`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select sessions with status = requested");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult.rows);
+        
+        //return json with all requested sessions
+        const responseData = {
+          results: queryResult.rows
+        }
+
+        const jsonContent = JSON.stringify(responseData);
+        res.send(jsonContent);
+    }
+  });
+});
+
+//fetch all private sessions associated with a user (used for scholar and student list pages)
+app.get("/private-sessions", function (req, res) {
+  console.log("fetching all private sessions...");
+  
+  var userId = req.headers['user_id'];
+
+  var query = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE session_type = 'private' AND id = '`+userId+`';`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select sessions with status = requested");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult.rows);
+        
+        //return json with all requested sessions
+        const responseData = {
+          results: queryResult.rows
+        }
+
+        const jsonContent = JSON.stringify(responseData);
+        res.send(jsonContent);
+    }
+  });
+});
+
+//fetch all public sessions associated with a user (used for scholar and student list pages)
+app.get("/public-sessions", function (req, res) {
+  console.log("fetching all private sessions...");
+  
+  var userId = req.headers['user_id'];
+
+  var query = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE session_type = 'public' AND id = '`+userId+`';`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select sessions with status = requested");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult.rows);
+        
+        //return json with all requested sessions
+        const responseData = {
+          results: queryResult.rows
+        }
+
+        const jsonContent = JSON.stringify(responseData);
+        res.send(jsonContent);
+    }
   });
 });
 
@@ -252,32 +333,6 @@ app.post("/register-session", function (req, res) {
   }
 
   res.send("action successful");
-});
-
-//fetch all requested sessions
-app.get("/requested-sessions", function (req, res) {
-  console.log("fetching all requested sessions...");
-
-  var query = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id
-  WHERE sessions.status = 'requested';`;
-
-  pool.query(query, (err, queryResult) => {
-    if (err) {
-        console.log("Error - Failed to select sessions with status = requested");
-        console.log(err);
-    }
-    else{
-        console.log(queryResult.rows);
-        
-        //return json with all requested sessions
-        const responseData = {
-          results: queryResult.rows
-        }
-
-        const jsonContent = JSON.stringify(responseData);
-        res.send(jsonContent);
-    }
-  });
 });
 
 //fetch all students
