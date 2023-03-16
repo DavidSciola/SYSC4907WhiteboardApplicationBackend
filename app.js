@@ -236,7 +236,8 @@ app.get("/session", function (req, res) {
 
           // step 3, fetch public sessions that user has HAS NOT registered for
           //var query3 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id WHERE sessions.session_type = 'public' AND id != '`+currentUserId+`';`;
-          var query3 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id AND session_type = 'public' AND sessions.session_ID NOT IN (SELECT session_id FROM user_sessions WHERE id = '`+currentUserId+`');`;
+          //var query3 = `SELECT * FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id AND session_type = 'public' AND sessions.session_ID NOT IN (SELECT session_id FROM user_sessions WHERE id = '`+currentUserId+`');`;
+          query3 = `SELECT sessions.session_id, sessions.description, sessions.course_code, sessions.start_time, sessions.end_time, sessions.date, sessions.person_limit, sessions.status FROM sessions INNER JOIN user_sessions ON sessions.session_id = user_sessions.session_id AND session_type = 'public' AND sessions.session_ID NOT IN (SELECT session_id FROM user_sessions WHERE id = '`+currentUserId+`') GROUP BY sessions.session_id;`;
           pool.query(query3, (err, queryResult) => {
             data['unregistered_public_sessions'] = queryResult.rows;
 
