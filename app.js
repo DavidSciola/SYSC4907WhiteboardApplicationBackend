@@ -409,6 +409,28 @@ app.post("/promote_student", function (req, res) {
   });
 });
 
+//demote scholar to student
+app.post("/demote_scholar", function (req, res) {
+  console.log("demoting scholar...");
+
+  var userId = req.headers['user_id'];
+
+   // step 1, set role to student
+  var query1 = `UPDATE user_accounts SET role = 'student' WHERE id = '`+userId+`';`;
+  pool.query(query1, (err, queryResult) => {
+
+    // step 2, delete all entries realted to user in user_sessions table
+    var query2 = `DELETE FROM user_sessions WHERE id = '`+userId+`';`;
+    pool.query(query2, (err, queryResult) => {
+
+      // step 3, delete all availability entries related to user in availability able
+      var query3 = `DELETE FROM availability WHERE id = '`+userId+`';`;
+      pool.query(query2, (err, queryResult) => {
+        res.send("action successful");
+      });
+    });
+  });
+});
 
 //fetch all scholars
 app.get("/scholars", function (req, res) {
