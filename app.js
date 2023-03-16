@@ -534,4 +534,89 @@ app.post("/availability", function (req, res) {
   res.send("request complete");
 });
 
+app.get("/available-scholars", function(req, res) {
+  console.log("fetching all scholars...");
+
+  var query = `SELECT id FROM user_accounts WHERE role = 'scholar';`;
+
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to select users with role = scholar");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult.rows);
+        
+        var scholars = queryResult.rows;
+
+        var date = req.headers["session-date"];
+        var start = req.headers["start"];
+        var end = req.headers["end"];
+
+        var sessionDate = new Date(date);
+        var dayOfWeek = sessionDate.getDay();
+        sessionDate.setDate(sessionDate.getDate() - dayOfWeek);
+
+        query = `SELECT * FROM availability WHERE start_of_week = '`+sessionDate.toDateString()+`';`;
+
+        pool.query(query, (err, queryResult) => {
+          if (err) {
+            console.log("Error - Failed to get availability of scholars");
+            console.log(err);
+          } else {
+            console.log(queryResult.rows);
+
+            for (var i = 0; i < queryResult.rows.length; i++) {
+              var availability = JSON.parse(queryResult.rows[i].availability);
+              for (var j = timeMap.get(start); j < timeMap.get(end); i++) {
+                if (availability[dayOfWeek][j] === "T") {
+                  scholars = scholars.filter(scholar => scholar.id !== queryResult.rows[i].id)
+                  break;
+                }
+              }
+            }
+          }
+
+          //return json with all requested sessions
+          const responseData = {
+            results: scholars
+          }
+
+          const jsonContent = JSON.stringify(responseData);
+          res.send(jsonContent);
+        });
+    }
+  });
+});
+
+app.post("/requested-session", function (req, res) {
+  console.log("assigning session...");
+
+  var userID = req.body["userID"];
+  var sessionID = req.body["sessionID"];
+
+  var query = `INSERT INTO user_sessions(ID, session_ID, attended) VALUES ('`+userID+`', `+sessionID+`, false);`;
+  pool.query(query, (err, queryResult) => {
+    if (err) {
+        console.log("Error - Failed to insert into user_sessions table");
+        console.log(err);
+    }
+    else{
+        console.log(queryResult);
+
+        query = `UPDATE sessions SET status = 'created' WHERE session_id = ` + sessionID + `;`;
+        pool.query(query, (err, queryResult) => {
+          if (err) {
+            console.log("Error - Failed to update session status");
+            console.log(err);
+          } else {
+            console.log(queryResult);
+          }
+        });
+    }
+  });
+
+  res.send("action successful");
+});
+
 app.listen(process.env.PORT || 5000 || 3000);
