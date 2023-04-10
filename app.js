@@ -5,6 +5,26 @@ app.use(express.json());
 const cors = require('cors');
 app.use(cors({origin:'*'}));
 
+const http = require('http').createServer(app);
+const io = require('socket.io')(http, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+io.on('connection', (socket) => {
+  console.log('Connection Established')
+
+  socket.on('whiteboard-data', (data) => {
+    socket.broadcast.emit('whiteboard-data', data);
+  })
+})
+
+var server_port = 5001;
+http.listen(server_port, () => {
+  console.log("Server Started on: " + server_port);
+})
 
 //setup postgres database
 const {Pool} = require("pg");
