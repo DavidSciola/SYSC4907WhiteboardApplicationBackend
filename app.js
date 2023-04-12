@@ -19,6 +19,10 @@ io.on('connection', (socket) => {
   socket.on('whiteboard-data', (data) => {
     socket.broadcast.emit('whiteboard-data', data);
   })
+
+  socket.on('message', (data) => {
+    socket.broadcast.emit('message', data);
+  })
 })
 
 var server_port = 5001;
